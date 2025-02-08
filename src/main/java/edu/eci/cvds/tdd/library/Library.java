@@ -2,8 +2,10 @@ package edu.eci.cvds.tdd.library;
 
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
 import edu.eci.cvds.tdd.library.user.User;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,12 +74,39 @@ public class Library {
      * @return the loan with the RETURNED status.
      */
     public Loan returnLoan(Loan loan) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        if (loan == null) {
+            return null;
+        }
+
+        if (!loans.contains(loan)) {
+            return null;
+        }
+
+        if (loan.getStatus() == LoanStatus.RETURNED) {
+            return loan;
+        }
+
+        Book book = loan.getBook();
+        if (book == null || !books.containsKey(book)) {
+            return null;
+        }
+
+        User user = loan.getUser();
+        if (user == null) {
+            return null;
+        }
+
+        loan.setStatus(LoanStatus.RETURNED);
+        loan.setReturnDate(LocalDate.now().atStartOfDay());
+        books.put(book, books.get(book) + 1);
+        return loan;
     }
 
     public boolean addUser(User user) {
         return users.add(user);
     }
 
+    public int getBookCount(Book book) {
+        return 0;
+    }
 }

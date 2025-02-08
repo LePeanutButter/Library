@@ -3,6 +3,7 @@ package edu.eci.cvds.tdd.library.loan;
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.user.User;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Loan {
@@ -11,6 +12,9 @@ public class Loan {
     private LocalDateTime loanDate;
     private LoanStatus status;
     private LocalDateTime returnDate;
+
+    public Loan(User user, Book book, LocalDate now, LoanStatus loanStatus) {
+    }
 
     public Book getBook() {
         return book;
