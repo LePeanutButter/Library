@@ -35,8 +35,13 @@ public class Library {
      * @return true if the book was stored false otherwise.
      */
     public boolean addBook(Book book) {
-        //TODO Implement the logic to add a new book into the map.
-        return false;
+        if (book == null || book.getTittle().trim().isEmpty() ||
+                book.getAuthor().trim().isEmpty() || book.getIsbn().trim().isEmpty() ||
+                !book.getIsbn().matches("\\d{3}-\\d{10}")) {
+            return false;
+        }
+        books.put(book, books.getOrDefault(book, 0) + 1);
+        return true;
     }
 
     /**
