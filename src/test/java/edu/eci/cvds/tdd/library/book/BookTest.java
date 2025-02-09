@@ -35,7 +35,7 @@ public class BookTest {
     @Test
     void shouldHandleDuplicateISBNWithDifferentInstances() {
         Book book1 = new Book("Refactoring", "Martin Fowler", "978-0201485677");
-        Book book2 = new Book("Refactoring", "Martin Fowler", "978-0201485677"); // Different instance, same ISBN
+        Book book2 = new Book("Refactoring", "Martin Fowler", "978-0201485677");
         library.addBook(book1);
         assertTrue(library.addBook(book2), "Duplicate ISBN books should increase the count");
     }

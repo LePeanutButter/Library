@@ -23,9 +23,9 @@ class ReturnTest {
     void setUp() {
         library = new Library();
 
-        user = new User(); // Usa el constructor vacío
-        user.setId("123"); // Establece manualmente el ID
-        user.setName("John Doe"); // Establece manualmente el nombre
+        user = new User();
+        user.setId("123");
+        user.setName("John Doe");
         book = new Book("Effective Java", "Joshua Bloch", "978-0134685991");
         library.addUser(user);
         library.addBook(book);
@@ -50,7 +50,7 @@ class ReturnTest {
         Loan fakeLoan = new Loan();
         fakeLoan.setUser(user);
         fakeLoan.setBook(fakeBook);
-        fakeLoan.setLoanDate(LocalDate.now().atStartOfDay()); // Convertir LocalDate a LocalDateTime
+        fakeLoan.setLoanDate(LocalDate.now().atStartOfDay());
         fakeLoan.setStatus(LoanStatus.ACTIVE);
 
         assertNull(library.returnLoan(fakeLoan), "Returning a non-existent loan should return null");
@@ -71,7 +71,7 @@ class ReturnTest {
     @Test
     void shouldUpdateReturnDateCorrectly() {
         Loan returnedLoan = library.returnLoan(loan);
-        assertNotNull(returnedLoan, "Returned loan should not be null");  // Asegura que no es null antes de acceder a sus propiedades
+        assertNotNull(returnedLoan, "Returned loan should not be null");
         assertNotNull(returnedLoan.getReturnDate(), "Return date should not be null");
         assertEquals(LocalDate.now(), returnedLoan.getReturnDate().toLocalDate(), "Return date should be today's date");
     }
