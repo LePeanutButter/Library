@@ -13,9 +13,6 @@ public class Loan {
     private LoanStatus status;
     private LocalDateTime returnDate;
 
-    public Loan(User user, Book book, LocalDate now, LoanStatus loanStatus) {
-    }
-
     public Book getBook() {
         return book;
     }

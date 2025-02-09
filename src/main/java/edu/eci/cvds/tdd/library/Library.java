@@ -37,13 +37,15 @@ public class Library {
      * @return true if the book was stored false otherwise.
      */
     public boolean addBook(Book book) {
-        if (book == null || book.getTittle().trim().isEmpty() ||
-                book.getAuthor().trim().isEmpty() || book.getIsbn().trim().isEmpty() ||
-                !book.getIsbn().matches("\\d{3}-\\d{10}")) {
-            return false;
+        boolean isValid = book != null &&
+                book.getTittle() != null && !book.getTittle().trim().isEmpty() &&
+                book.getAuthor() != null && !book.getAuthor().trim().isEmpty() &&
+                book.getIsbn() != null && book.getIsbn().matches("\\d{3}-\\d{10}");
+
+        if (isValid) {
+            books.put(book, books.getOrDefault(book, 0) + 1);
         }
-        books.put(book, books.getOrDefault(book, 0) + 1);
-        return true;
+        return isValid;
     }
 
     /**
@@ -74,39 +76,28 @@ public class Library {
      * @return the loan with the RETURNED status.
      */
     public Loan returnLoan(Loan loan) {
-        if (loan == null) {
+        if (loan == null || loan.getUser() == null || loan.getBook() == null) {
             return null;
         }
+        for (Loan l : loans) {
+            if (l.getUser().equals(loan.getUser()) && l.getBook().equals(loan.getBook()) && l.getStatus() == LoanStatus.ACTIVE) {
+                l.setStatus(LoanStatus.RETURNED);
+                l.setReturnDate(LocalDate.now().atStartOfDay());
+                books.put(l.getBook(), books.getOrDefault(l.getBook(), 0) + 1);
 
-        if (!loans.contains(loan)) {
-            return null;
+                return l;
+            }
         }
-
-        if (loan.getStatus() == LoanStatus.RETURNED) {
-            return loan;
-        }
-
-        Book book = loan.getBook();
-        if (book == null || !books.containsKey(book)) {
-            return null;
-        }
-
-        User user = loan.getUser();
-        if (user == null) {
-            return null;
-        }
-
-        loan.setStatus(LoanStatus.RETURNED);
-        loan.setReturnDate(LocalDate.now().atStartOfDay());
-        books.put(book, books.get(book) + 1);
-        return loan;
+        return null;
     }
 
+    /**
+     * Adds a new user to the library.
+     *
+     * @param user User to add.
+     * @return true if the user was added, false otherwise.
+     */
     public boolean addUser(User user) {
         return users.add(user);
-    }
-
-    public int getBookCount(Book book) {
-        return 0;
     }
 }
