@@ -37,8 +37,15 @@ public class Library {
      * @return true if the book was stored false otherwise.
      */
     public boolean addBook(Book book) {
-        //TODO Implement the logic to add a new book into the map.
-        return false;
+        boolean isValid = book != null &&
+                book.getTittle() != null && !book.getTittle().trim().isEmpty() &&
+                book.getAuthor() != null && !book.getAuthor().trim().isEmpty() &&
+                book.getIsbn() != null && book.getIsbn().matches("\\d{3}-\\d{10}");
+
+        if (isValid) {
+            books.put(book, books.getOrDefault(book, 0) + 1);
+        }
+        return isValid;
     }
 
     /**
@@ -90,12 +97,28 @@ public class Library {
      * @return the loan with the RETURNED status.
      */
     public Loan returnLoan(Loan loan) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
+        if (loan == null || loan.getUser() == null || loan.getBook() == null) {
+            return null;
+        }
+        for (Loan l : loans) {
+            if (l.getUser().equals(loan.getUser()) && l.getBook().equals(loan.getBook()) && l.getStatus() == LoanStatus.ACTIVE) {
+                l.setStatus(LoanStatus.RETURNED);
+                l.setReturnDate(LocalDateTime.now().atStartOfDay());
+                books.put(l.getBook(), books.getOrDefault(l.getBook(), 0) + 1);
+
+                return l;
+            }
+        }
         return null;
     }
 
+    /**
+     * Adds a new user to the library.
+     *
+     * @param user User to add.
+     * @return true if the user was added, false otherwise.
+     */
     public boolean addUser(User user) {
         return users.add(user);
     }
-
 }
