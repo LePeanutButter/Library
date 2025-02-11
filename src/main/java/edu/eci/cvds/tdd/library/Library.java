@@ -74,15 +74,17 @@ public class Library {
                 .orElse(null);
         boolean activeLoan = loans.stream()
                 .anyMatch(l -> l.getUser().equals(user) && l.getBook().equals(book) && l.getStatus() == LoanStatus.ACTIVE);
-        int availableBooks = books.get(book);
-        if (user != null && book != null && !activeLoan && availableBooks > 0) {
-            loan = new Loan();
-            loan.setBook(book);
-            loan.setUser(user);
-            loan.setLoanDate(LocalDateTime.now());
-            loan.setStatus(LoanStatus.ACTIVE);
-            loans.add(loan);
-            books.put(book, availableBooks - 1);
+        if (user != null && book != null && !activeLoan) {
+            int availableBooks = books.get(book);
+            if (availableBooks > 0) {
+                loan = new Loan();
+                loan.setBook(book);
+                loan.setUser(user);
+                loan.setLoanDate(LocalDateTime.now());
+                loan.setStatus(LoanStatus.ACTIVE);
+                loans.add(loan);
+                books.put(book, availableBooks - 1);
+            }
         }
         return loan;
     }
@@ -103,7 +105,7 @@ public class Library {
         for (Loan l : loans) {
             if (l.getUser().equals(loan.getUser()) && l.getBook().equals(loan.getBook()) && l.getStatus() == LoanStatus.ACTIVE) {
                 l.setStatus(LoanStatus.RETURNED);
-                l.setReturnDate(LocalDateTime.now().atStartOfDay());
+                l.setReturnDate(LocalDateTime.now());
                 books.put(l.getBook(), books.getOrDefault(l.getBook(), 0) + 1);
 
                 return l;
