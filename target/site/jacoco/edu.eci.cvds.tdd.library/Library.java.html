@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Library.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Library</a> &gt; <a href="index.source.html" class="el_package">edu.eci.cvds.tdd.library</a> &gt; <span class="el_source">Library.java</span></div><h1>Library.java</h1><pre class="source lang-java linenums">package edu.eci.cvds.tdd.library;
+
+import edu.eci.cvds.tdd.library.book.Book;
+import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
+import edu.eci.cvds.tdd.library.user.User;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Library responsible for manage the loans and the users.
+ */
+public class Library {
+
+    private final List&lt;User&gt; users;
+    private final Map&lt;Book, Integer&gt; books;
+    private final List&lt;Loan&gt; loans;
+
+<span class="fc" id="L23">    public Library() {</span>
+<span class="fc" id="L24">        users = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L25">        books = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L26">        loans = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Adds a new {@link edu.eci.cvds.tdd.library.book.Book} into the system, the book is store in a Map that contains
+     * the {@link edu.eci.cvds.tdd.library.book.Book} and the amount of books available, if the book already exist the
+     * amount should increase by 1 and if the book is new the amount should be 1, this method returns true if the
+     * operation is successful false otherwise.
+     *
+     * @param book The book to store in the map.
+     *
+     * @return true if the book was stored false otherwise.
+     */
+    public boolean addBook(Book book) {
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        boolean isValid = book != null &amp;&amp;</span>
+<span class="pc bpc" id="L41" title="1 of 4 branches missed.">                book.getTittle() != null &amp;&amp; !book.getTittle().trim().isEmpty() &amp;&amp;</span>
+<span class="pc bpc" id="L42" title="1 of 4 branches missed.">                book.getAuthor() != null &amp;&amp; !book.getAuthor().trim().isEmpty() &amp;&amp;</span>
+<span class="pc bpc" id="L43" title="1 of 4 branches missed.">                book.getIsbn() != null &amp;&amp; book.getIsbn().matches(&quot;\\d{3}-\\d{10}&quot;);</span>
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (isValid) {</span>
+<span class="fc" id="L46">            books.put(book, books.getOrDefault(book, 0) + 1);</span>
+        }
+<span class="fc" id="L48">        return isValid;</span>
+    }
+
+    /**
+     * This method creates a new loan with for the User identify by the userId and the book identify by the isbn,
+     * the loan should be store in the list of loans, to successfully create a loan is required to validate that the
+     * book is available, that the user exist and the same user could not have a loan for the same book
+     * {@link edu.eci.cvds.tdd.library.loan.LoanStatus#ACTIVE}, once these requirements are meet the amount of books is
+     * decreased and the loan should be created with {@link edu.eci.cvds.tdd.library.loan.LoanStatus#ACTIVE} status and
+     * the loan date should be the current date.
+     *
+     * @param userId id of the user.
+     * @param isbn book identification.
+     *
+     * @return The new created loan.
+     */
+    public Loan loanABook(String userId, String isbn) {
+<span class="fc" id="L65">        Loan loan = null;</span>
+<span class="fc" id="L66">        User user = users.stream()</span>
+<span class="fc" id="L67">                .filter(u -&gt; u.getId().equals(userId))</span>
+<span class="fc" id="L68">                .findFirst()</span>
+<span class="fc" id="L69">                .orElse(null);</span>
+<span class="fc" id="L70">        Book book = books.keySet()</span>
+<span class="fc" id="L71">                .stream()</span>
+<span class="fc" id="L72">                .filter(b -&gt; b.getIsbn().equals(isbn))</span>
+<span class="fc" id="L73">                .findFirst()</span>
+<span class="fc" id="L74">                .orElse(null);</span>
+<span class="fc" id="L75">        boolean activeLoan = loans.stream()</span>
+<span class="pc bpc" id="L76" title="1 of 6 branches missed.">                .anyMatch(l -&gt; l.getUser().equals(user) &amp;&amp; l.getBook().equals(book) &amp;&amp; l.getStatus() == LoanStatus.ACTIVE);</span>
+<span class="fc bfc" id="L77" title="All 6 branches covered.">        if (user != null &amp;&amp; book != null &amp;&amp; !activeLoan) {</span>
+<span class="fc" id="L78">            int availableBooks = books.get(book);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            if (availableBooks &gt; 0) {</span>
+<span class="fc" id="L80">                loan = new Loan();</span>
+<span class="fc" id="L81">                loan.setBook(book);</span>
+<span class="fc" id="L82">                loan.setUser(user);</span>
+<span class="fc" id="L83">                loan.setLoanDate(LocalDateTime.now());</span>
+<span class="fc" id="L84">                loan.setStatus(LoanStatus.ACTIVE);</span>
+<span class="fc" id="L85">                loans.add(loan);</span>
+<span class="fc" id="L86">                books.put(book, availableBooks - 1);</span>
+            }
+        }
+<span class="fc" id="L89">        return loan;</span>
+    }
+
+    /**
+     * This method return a loan, meaning that the amount of books should be increased by 1, the status of the Loan
+     * in the loan list should be {@link edu.eci.cvds.tdd.library.loan.LoanStatus#RETURNED} and the loan return
+     * date should be the current date, validate that the loan exist.
+     *
+     * @param loan loan to return.
+     *
+     * @return the loan with the RETURNED status.
+     */
+    public Loan returnLoan(Loan loan) {
+<span class="fc bfc" id="L102" title="All 6 branches covered.">        if (loan == null || loan.getUser() == null || loan.getBook() == null) {</span>
+<span class="fc" id="L103">            return null;</span>
+        }
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (Loan l : loans) {</span>
+<span class="pc bpc" id="L106" title="2 of 6 branches missed.">            if (l.getUser().equals(loan.getUser()) &amp;&amp; l.getBook().equals(loan.getBook()) &amp;&amp; l.getStatus() == LoanStatus.ACTIVE) {</span>
+<span class="fc" id="L107">                l.setStatus(LoanStatus.RETURNED);</span>
+<span class="fc" id="L108">                l.setReturnDate(LocalDateTime.now());</span>
+<span class="fc" id="L109">                books.put(l.getBook(), books.getOrDefault(l.getBook(), 0) + 1);</span>
+
+<span class="fc" id="L111">                return l;</span>
+            }
+<span class="fc" id="L113">        }</span>
+<span class="fc" id="L114">        return null;</span>
+    }
+
+    /**
+     * Adds a new user to the library.
+     *
+     * @param user User to add.
+     * @return true if the user was added, false otherwise.
+     */
+    public boolean addUser(User user) {
+<span class="fc" id="L124">        return users.add(user);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
